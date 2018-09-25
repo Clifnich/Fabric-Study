@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+<body>
+
+  <canvas id="c" height="200" width="300"></canvas>
+  <img src="images/Spinner-1.6s-200px.gif" id="my-image" style="display: none;"/>
+
+  <script src="js/fabric.min.js"></script>
+  <script type="text/javascript">
+      let canvas = new fabric.Canvas('c');
+      let rect = new fabric.Rect({
+        left: 100,
+        top: 100,
+        fill: 'red',
+        width: 20,
+        height: 20,
+        angle: 45
+      });
+      canvas.add(rect);
+
+      rect.set({ left: 20, top: 50, angle: 0 });
+
+      canvas.renderAll();
+
+      let circle = new fabric.Circle({
+        radius: 20, fill: 'green', left: 100, top: 100
+      });
+      let triangle = new fabric.Triangle({
+        width: 20, height: 30, fill: 'blue', left: 50, top: 50
+      });
+
+      canvas.add(circle, triangle);
+
+      rect.set({ strokeWidth: 5, stroke: 'tgba(100,200,200,0.5)' });
+      rect.set('angle', 15).set('flipY', true);
+
+      canvas.renderAll();
+
+      fabric.Object.prototype.getAngleInRadians = function() {
+        return this.get('angle') / 180 * Math.PI;
+      };
+
+      let rect2 = new fabric.Rect({ angle: 45 });
+      console.log(rect2.getAngleInRadians());
+
+      canvas.remove(rect);
+
+      canvas.selection = true;
+
+      let imgElement = document.getElementById('my-image');
+      let imgInstance = new fabric.Image(imgElement, {
+        left: 100,
+        top: 100,
+        angle: 30,
+        opacity: 0.85
+      });
+
+      canvas.add(imgInstance);
+
+      // let canvasEl = document.getElementById('c');
+      // let ctx = canvasEl.getContext('2d');
+      // ctx.fillStyle = 'red';
+      // ctx.fillRect(100, 100, 20, 20);
+  </script>
+</body>
+</html>
