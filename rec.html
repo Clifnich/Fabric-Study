@@ -1,9 +1,33 @@
 <!doctype html>
 <html>
+<head>
+  <style>
+      #c {
+        border: 1px solid black;
+      }
+
+      .mybutton {
+        position: absolute;
+        top: 10px;
+        right: 20px;
+      }
+
+      .rec-button {
+        position: absolute;
+        top: 40px;
+        right: 20px;
+      }
+  </style>
+</head>
 <body>
 
-  <canvas id="c" height="200" width="300"></canvas>
+  <canvas id="c" height="600" width="900"></canvas>
   <img src="images/Spinner-1.6s-200px.gif" id="my-image" style="display: none;"/>
+
+  <button class="mybutton" onclick="addComment()">Add Comment</button>
+  <button class="rec-button" onclick="addRectangle()">
+    Add Rectangle
+  </button>
 
   <script src="js/fabric.min.js"></script>
   <script type="text/javascript">
@@ -22,7 +46,7 @@
 
       canvas.renderAll();
 
-      let circle = new fabric.Circle({
+      var circle = new fabric.Circle({
         radius: 20, fill: 'green', left: 100, top: 100
       });
       let triangle = new fabric.Triangle({
@@ -56,6 +80,82 @@
       });
 
       canvas.add(imgInstance);
+
+      canvas.observe('mouse:down', function(options) {
+        console.log(options.e.clientX, options.e.clientY);
+      });
+
+      var isDown, origX, origY, rect22;
+
+      // canvas.observe('mouse:down', function(o) {
+      //   isDown = true;
+      //   var pointer = canvas.getPointer(o.e);
+      //   origX = pointer.x;
+      //   origY = pointer.y;
+      //   rect22 = new fabric.Rect({
+      //     left: pointer.x,
+      //     top: pointer.y,
+      //   });
+      //   canvas.add(rect22);
+      // });
+
+      // canvas.observe('mouse:move', function(o){
+      //   if (!isDown) return;
+      //   var pointer = canvas.getPointer(o.e);
+      //   rect22.set({
+      //     width: Math.abs(origX - pointer.x),
+      //     height: Math.abs(origY - pointer.y),
+      //   });
+      //   canvas.renderAll();
+      // });
+
+      canvas.observe('mouse:up', function(o){
+        isDown = false;
+      });
+
+      console.log(canvas.__eventListeners['mouse:down']);
+
+      function addComment() {
+        let text = new fabric.IText('Comment Here..', { left: 150, top: 100 });
+        canvas.add(text);
+      }
+
+      function addRectangle() {
+        canvas.__eventListeners['mouse:down'] = [];
+        canvas.observe('mouse:down', function(e) { mousedown(e); });
+      }
+
+      function mousedown(o) {
+        isDown = true;
+        var pointer = canvas.getPointer(o.e);
+        origX = pointer.x;
+        origY = pointer.y;
+        rect22 = new fabric.Rect({
+          left: pointer.x,
+          top: pointer.y,
+        });
+        canvas.add(rect22);
+
+        canvas.observe('mouse:move', function(e) { mousemove(e); });
+        canvas.observe('mouse:up', function(e) { mouseup(e); });
+      }
+
+      function mousemove(o) {
+        if (!isDown) return;
+        var pointer = canvas.getPointer(o.e);
+        rect22.set({
+          width: Math.abs(origX - pointer.x),
+          height: Math.abs(origY - pointer.y),
+        });
+        canvas.renderAll();
+      }
+
+      function mouseup(e) {
+        isDown = false;
+        canvas.__eventListeners['mouse:down'] = [];
+        canvas.__eventListeners['mouse:move'] = [];
+        canvas.__eventListeners['mouse:up'] = [];
+      }
 
       // let canvasEl = document.getElementById('c');
       // let ctx = canvasEl.getContext('2d');
